@@ -7,6 +7,7 @@ import aoc.services.RequestService
 import aoc.services.SessionService
 import aoc.solutions.day1.Day1Solution
 import aoc.solutions.day2.Day2Solution
+import aoc.solutions.day3.Day3Solution
 
 open class Application {
     companion object {
@@ -16,7 +17,8 @@ open class Application {
         private val profiler = Profiler()
         private val solutions = arrayOf(
                 Day1Solution(),
-                Day2Solution()
+                Day2Solution(),
+                Day3Solution()
         )
 
         @JvmStatic
