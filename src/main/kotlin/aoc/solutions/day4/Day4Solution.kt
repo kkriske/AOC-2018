@@ -64,14 +64,6 @@ sealed class GuardEvent(val timestamp: LocalDateTime) {
     class Sleep(timestamp: LocalDateTime) : GuardEvent(timestamp)
     class Shift(timestamp: LocalDateTime, val guard: Int) : GuardEvent(timestamp)
 
-    fun print() {
-        when (this) {
-            is GuardEvent.Wake -> println("$timestamp Wake")
-            is GuardEvent.Sleep -> println("$timestamp Sleep")
-            is GuardEvent.Shift -> println("$timestamp Shift $guard")
-        }
-    }
-
     companion object {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
 
