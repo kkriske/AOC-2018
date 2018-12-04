@@ -8,6 +8,7 @@ import aoc.services.SessionService
 import aoc.solutions.day1.Day1Solution
 import aoc.solutions.day2.Day2Solution
 import aoc.solutions.day3.Day3Solution
+import aoc.solutions.day4.Day4Solution
 
 open class Application {
     companion object {
@@ -16,9 +17,10 @@ open class Application {
         private val challengeInputService = ChallengeInputService(requestService)
         private val profiler = Profiler()
         private val solutions = arrayOf(
-                Day1Solution(),
-                Day2Solution(),
-                Day3Solution()
+            Day1Solution(),
+            Day2Solution(),
+            Day3Solution(),
+            Day4Solution()
         )
 
         @JvmStatic
@@ -53,9 +55,9 @@ open class Application {
             println("Retrieving assignment data...")
 
             return challengeInputService.getInput(solution.day)
-                    .map { getSolutionTextFromInput(solution, it) }
-                    .doOnError { handleSolutionError(it) }
-                    .doOnSuccess { handleSolutionSuccess(solution, it)}
+                .map { getSolutionTextFromInput(solution, it) }
+                .doOnError { handleSolutionError(it) }
+                .doOnSuccess { handleSolutionSuccess(solution, it) }
         }
 
         private fun getSolutionTextFromInput(solution: Solution, input: String): String {
