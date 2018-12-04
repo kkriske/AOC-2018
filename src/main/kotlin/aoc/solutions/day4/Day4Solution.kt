@@ -7,40 +7,54 @@ import java.time.format.DateTimeFormatter
 class Day4Solution : Solution(4) {
 
     override fun solvePartOne(input: String): String {
-        val orderedEvents = input.lineSequence()
+        val asleep = input.lineSequence()
             .map { GuardEvent.parse(it) }
             .sortedBy { it.timestamp }
+            .mapGuardToMinutesAsleep()
 
-        var guard = 0
-        var sleepTime = LocalDateTime.now()
-        val asleep = mutableMapOf<Int, MutableList<Int>>()
-        for (event in orderedEvents) {
-            when (event) {
-                is GuardEvent.Shift -> guard = event.guard
-                is GuardEvent.Sleep -> sleepTime = event.timestamp
-                is GuardEvent.Wake -> {
-                    val list = asleep.computeIfAbsent(guard) { mutableListOf()}
-                    (sleepTime.minute until event.timestamp.minute).forEach { list.add(it) }
-                }
-            }
-        }
+        val mostAsleepEntry = asleep.maxBy { it.value.count() } ?: throw IllegalStateException()
 
-        val mostAsleepEntry = asleep.maxBy { it.value.sum() } ?: throw IllegalStateException()
-
-        val sleepyGuard = mostAsleepEntry.key
-        val sleepyMinute = mostAsleepEntry.value
+        val guard = mostAsleepEntry.key
+        val minute = mostAsleepEntry.value
             .groupingBy { it }
             .eachCount()
-            .maxBy { it.value }?.value ?: throw IllegalStateException()
+            .maxBy { it.value }?.key ?: throw IllegalStateException()
 
-        return (sleepyGuard * sleepyMinute).toString()
+        return (guard * minute).toString()
     }
 
     override fun solvePartTwo(input: String): String {
-        return ""
+        val asleep = input.lineSequence()
+            .map { GuardEvent.parse(it) }
+            .sortedBy { it.timestamp }
+            .mapGuardToMinutesAsleep()
 
+        val entry = asleep.flatMap { entry ->
+            entry.value.groupingBy { it }
+                .eachCount()
+                .map { Triple(entry.key, it.value, it.key) } // guard, count, minute
+        }.maxBy { it.second } ?: throw IllegalStateException()
+
+        return (entry.first * entry.third).toString()
     }
 
+}
+
+fun Sequence<GuardEvent>.mapGuardToMinutesAsleep(): Map<Int, List<Int>> {
+    var guard = 0
+    var sleepTime = LocalDateTime.now()
+    val asleep = mutableMapOf<Int, MutableList<Int>>()
+    forEach { event ->
+        when (event) {
+            is GuardEvent.Shift -> guard = event.guard
+            is GuardEvent.Sleep -> sleepTime = event.timestamp
+            is GuardEvent.Wake -> {
+                val list = asleep.computeIfAbsent(guard) { mutableListOf() }
+                (sleepTime.minute until event.timestamp.minute).forEach { list.add(it) }
+            }
+        }
+    }
+    return asleep
 }
 
 
@@ -49,6 +63,14 @@ sealed class GuardEvent(val timestamp: LocalDateTime) {
     class Wake(timestamp: LocalDateTime) : GuardEvent(timestamp)
     class Sleep(timestamp: LocalDateTime) : GuardEvent(timestamp)
     class Shift(timestamp: LocalDateTime, val guard: Int) : GuardEvent(timestamp)
+
+    fun print() {
+        when (this) {
+            is GuardEvent.Wake -> println("$timestamp Wake")
+            is GuardEvent.Sleep -> println("$timestamp Sleep")
+            is GuardEvent.Shift -> println("$timestamp Shift $guard")
+        }
+    }
 
     companion object {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
