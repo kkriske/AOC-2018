@@ -9,6 +9,7 @@ import aoc.solutions.day1.Day1Solution
 import aoc.solutions.day2.Day2Solution
 import aoc.solutions.day3.Day3Solution
 import aoc.solutions.day4.Day4Solution
+import aoc.solutions.day5.Day5Solution
 
 open class Application {
     companion object {
@@ -20,7 +21,8 @@ open class Application {
             Day1Solution(),
             Day2Solution(),
             Day3Solution(),
-            Day4Solution()
+            Day4Solution(),
+            Day5Solution()
         )
 
         @JvmStatic
